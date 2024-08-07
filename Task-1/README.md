@@ -18,9 +18,9 @@ The CronJob is configured to run daily at midnight.
 
 ## Deployment Steps
 
-- $git clone https://github.com/meirmany/Cynomi-TASK.git
-- $cd Cynomi-TASK/Task-1
-- $helm install my-etcd ./etcd-10.2.11.tgz --namespace <namespace_name>
+- $ git clone https://github.com/meirmany/Cynomi-TASK.git
+- $ cd Cynomi-TASK/Task-1
+- $ helm install my-etcd ./etcd-10.2.11.tgz --namespace <namespace_name>
 
 ## Configuration Options
 
