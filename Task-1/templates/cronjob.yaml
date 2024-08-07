@@ -1,0 +1,98 @@
+{{- /*
+Copyright Broadcom, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $mergedLabels := mergeOverwrite (dict) .Values.commonLabels .Values.cronjob.podLabels -}}
+apiVersion: {{ include "common.capabilities.cronjob.apiVersion" . }}
+kind: CronJob
+metadata:
+  name: {{ printf "%s-defrag" (include "common.names.fullname" .) | trunc 63 | trimSuffix "-" }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  concurrencyPolicy: Forbid
+  schedule: {{ .Values.cronjob.schedule | quote }}
+  successfulJobsHistoryLimit: {{ .Values.cronjob.historyLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels: {{- include "common.labels.standard" ( dict "customLabels" $mergedLabels "context" $ ) | nindent 12 }}
+          {{- if .Values.cronjob.podAnnotations }}
+          annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.cronjob.podAnnotations "context" $) | nindent 12 }}
+          {{- end }}
+        spec:
+          {{- include "etcd.imagePullSecrets" . | nindent 10 }}
+          {{- if .Values.cronjob.nodeSelector }}
+          nodeSelector: {{- toYaml .Values.cronjob.nodeSelector | nindent 12 }}
+          {{- end }}
+          {{- if .Values.cronjob.tolerations }}
+          tolerations: {{- toYaml .Values.cronjob.tolerations | nindent 12 }}
+          {{- end }}
+          restartPolicy: OnFailure
+          {{- if .Values.podSecurityContext.enabled }}
+          securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.podSecurityContext "context" $) | nindent 12 }}
+          {{- end }}
+          #serviceAccountName: {{ .Values.serviceAccount.name | quote }}
+          serviceAccountName: {{ include "etcd.serviceAccountName" . }}
+          containers:
+            - name: {{ .Values.cronjob.containerName | quote }}
+              image: {{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+              imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+              {{- if .Values.containerSecurityContext.enabled }}
+              securityContext: {{- include "common.compatibility.renderSecurityContext" (dict "secContext" .Values.containerSecurityContext "context" $) | nindent 16 }}
+              {{- end }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  endpoints=$(kubectl get endpoints my-etcd -o jsonpath='{.subsets[*].addresses[*].ip}' | sed 's/ /,/g')
+                  ETCDCTL_API=3 etcdctl defrag --endpoints=$endpoints
+              env:
+                - name: BITNAMI_DEBUG
+                  value: {{ ternary "true" "false" (or .Values.image.debug .Values.diagnosticMode.enabled) | quote }}
+                - name: ETCDCTL_API
+                  value: "3"
+                - name: ETCD_ON_K8S
+                  value: "yes"
+                - name: MY_STS_NAME
+                  value: {{ include "common.names.fullname" . | quote }}
+              {{- if .Values.auth.client.secureTransport }}
+                - name: ETCD_CERT_FILE
+                  value: "/opt/bitnami/etcd/certs/client/{{ .Values.auth.client.certFilename }}"
+                - name: ETCD_KEY_FILE
+                  value: "/opt/bitnami/etcd/certs/client/{{ .Values.auth.client.certKeyFilename }}"
+                {{- if .Values.auth.client.enableAuthentication }}
+                - name: ETCD_CLIENT_CERT_AUTH
+                  value: "true"
+                - name: ETCD_TRUSTED_CA_FILE
+                  value: "/opt/bitnami/etcd/certs/client/{{ .Values.auth.client.caFilename | default "ca.crt" }}"
+                {{- else if .Values.auth.client.caFilename }}
+                - name: ETCD_TRUSTED_CA_FILE
+                  value: "/opt/bitnami/etcd/certs/client/{{ .Values.auth.client.caFilename | default "ca.crt" }}
+                {{- end }}
+              {{- end }}
+              resources:
+                {{- toYaml .Values.cronjob.resources | nindent 16 }}
+              volumeMounts:
+                - name: empty-dir
+                  mountPath: /tmp
+                  subPath: tmp-dir
+                {{- if .Values.auth.client.secureTransport }}
+                - name: certs
+                  mountPath: /opt/bitnami/etcd/certs/client
+                  readOnly: true
+                {{- end }}
+          volumes:
+            - name: empty-dir
+              emptyDir: {}
+            {{- if .Values.auth.client.secureTransport }}
+            - name: certs
+              secret:
+                secretName: {{ required "A secret containing the client certificates is required" (tpl .Values.auth.client.existingSecret .) }}
+                defaultMode: 256
+            {{- end }}
