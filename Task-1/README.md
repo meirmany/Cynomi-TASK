@@ -1,26 +1,28 @@
 <!--- app-name: etcd Defragmentation CronJob Helm Chart -->
 
-# Introduction 
+# etcd Defragmentation CronJob Helm Chart
+
+## Introduction 
 
 This Helm chart deploys a etcd instance with CronJob for defragmenting an etcd cluster. 
 Regular defragmentation helps maintain the performance and efficiency of the etcd cluster 
 by reclaiming storage space and optimizing the database. 
 The CronJob is configured to run daily at midnight.
 
-# Setup Instructions
+## Setup Instructions
 
-# Prerequisites
-1.Kubernetes Cluster: Ensure you have a running Kubernetes cluster.
-2.Helm: Helm should be installed and configured on your system.
-3.kubectl: Make sure kubectl is installed and configured to interact with your Kubernetes cluster.
+## Prerequisites
+1. Kubernetes Cluster: Ensure you have a running Kubernetes cluster.
+2. Helm: Helm should be installed and configured on your system.
+3. kubectl: Make sure kubectl is installed and configured to interact with your Kubernetes cluster.
 
-# Deployment Steps
+## Deployment Steps
 
 - $git clone https://github.com/meirmany/Cynomi-TASK.git
 - $cd Cynomi-TASK/Task-1
 - $helm install my-etcd ./etcd-10.2.11.tgz --namespace <namespace_name>
 
-# Configuration Options
+## Configuration Options
 
 The values.yaml file contains several configurable parameters:
 
@@ -30,13 +32,13 @@ The values.yaml file contains several configurable parameters:
 - image.repository: The repository for the etcd image.
 - image.tag: The tag of the etcd image.
 
-# Defrag CronJob
+## Defrag CronJob
 
 The defrag CronJob dynamically discovers the etcd endpoints within the Kubernetes cluster 
 and performs defragmentation on these endpoints. 
 This ensures that the defragmentation process is always up-to-date with the current cluster configuration.
 
-# Additional Features or Improvements
+## Additional Features or Improvements
 
 1. Scalability -->
    The CronJob dynamically adjusts to the number of etcd endpoints discovered in the cluster, 
