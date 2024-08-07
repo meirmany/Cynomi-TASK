@@ -15,28 +15,28 @@ The goal is to ensure the built Docker image runs without any errors.
 
 ## Steps to Build and Run the Docker Image 
 
-- $git clone https://github.com/meirmany/Cynomi-TASK.git
-- $cd Cynomi-TASK/Task-2
-- $docker build -t my-jenkins-agent-maven .
-- $sudo docker run -it --name my-jenkins-agent-container my-jenkins-agent-maven /bin/bash
+- $ git clone https://github.com/meirmany/Cynomi-TASK.git
+- $ cd Cynomi-TASK/Task-2
+- $ docker build -t my-jenkins-agent-maven .
+- $ sudo docker run -it --name my-jenkins-agent-container my-jenkins-agent-maven /bin/bash
 
 ## Installed Software Verification
 
 1. Check Maven Version
-- $mvn -v
+- $ mvn -v
 
 2. Check Google Chrome Version:
-- $google-chrome --version
+- $ google-chrome --version
 
 3. Check ChromeDriver Version:
-- chromedriver --version
+- $ chromedriver --version
 
 ## Cleaning Up
 
 When you’re done testing, you can stop and remove the container:
 
-- $docker stop my-jenkins-agent-container
-- $docker rm my-jenkins-agent-container
+- $ docker stop my-jenkins-agent-container
+- $ docker rm my-jenkins-agent-container
 
 ## Additional Features or Improvements
 
@@ -51,4 +51,3 @@ When you’re done testing, you can stop and remove the container:
 - Enhanced Logging: Configure the container to provide detailed logs for easier troubleshooting.
 - Monitoring Integration: Integrate with monitoring tools like Prometheus or Grafana 
   to keep track of container performance and availability.
-
