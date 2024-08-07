@@ -24,11 +24,11 @@ $helm install my-etcd ./etcd-10.2.11.tgz --namespace <namespace_name>
 
 The values.yaml file contains several configurable parameters:
 
-cronjob.schedule: The schedule for running the CronJob (e.g., "0 0 * * *" for daily at midnight).
-cronjob.resources: Resource requests and limits for the CronJob container.
-image.registry: The container registry for the etcd image.
-image.repository: The repository for the etcd image.
-image.tag: The tag of the etcd image.
+--> cronjob.schedule: The schedule for running the CronJob (e.g., "0 0 * * *" for daily at midnight).
+--> cronjob.resources: Resource requests and limits for the CronJob container.
+--> image.registry: The container registry for the etcd image.
+--> image.repository: The repository for the etcd image.
+--> image.tag: The tag of the etcd image.
 
 # Defrag CronJob
 
