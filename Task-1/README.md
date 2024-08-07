@@ -16,19 +16,19 @@ The CronJob is configured to run daily at midnight.
 
 # Deployment Steps
 
-$git clone https://github.com/meirmany/Cynomi-TASK.git
-$cd Cynomi-TASK/Task-1
-$helm install my-etcd ./etcd-10.2.11.tgz --namespace <namespace_name>
+- $git clone https://github.com/meirmany/Cynomi-TASK.git
+- $cd Cynomi-TASK/Task-1
+- $helm install my-etcd ./etcd-10.2.11.tgz --namespace <namespace_name>
 
 # Configuration Options
 
 The values.yaml file contains several configurable parameters:
 
--cronjob.schedule: The schedule for running the CronJob (e.g., "0 0 * * *" for daily at midnight).
--cronjob.resources: Resource requests and limits for the CronJob container.
--image.registry: The container registry for the etcd image.
--image.repository: The repository for the etcd image.
--image.tag: The tag of the etcd image.
+- cronjob.schedule: The schedule for running the CronJob (e.g., "0 0 * * *" for daily at midnight).
+- cronjob.resources: Resource requests and limits for the CronJob container.
+- image.registry: The container registry for the etcd image.
+- image.repository: The repository for the etcd image.
+- image.tag: The tag of the etcd image.
 
 # Defrag CronJob
 
